@@ -2,10 +2,13 @@ import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
+import { useTodos } from "../store/todos";
 
-export const TodoList = ({ todos, handleEditTodo, handleDeleteTodo }) => {
+export const TodoList = () => {
   const [editedValue, setEditedValue] = useState("");
   const [todoIdEdit, setTodoIdEdit] = useState("");
+
+  const { todos, editTodo, deleteTodo } = useTodos();
 
   const hasTodos = todos?.length > 0;
 
@@ -15,9 +18,11 @@ export const TodoList = ({ todos, handleEditTodo, handleDeleteTodo }) => {
   };
 
   const handleSaveEdit = (todo) => {
-    handleEditTodo({ ...todo, title: editedValue });
+    editTodo({ ...todo, title: editedValue });
     setTodoIdEdit("");
   };
+
+  const handleDeleteTodo = (todo) => deleteTodo(todo);
 
   if (!hasTodos) {
     return <Box>You have no TODO. Create one!</Box>;
@@ -25,7 +30,7 @@ export const TodoList = ({ todos, handleEditTodo, handleDeleteTodo }) => {
 
   return (
     <Box width={500} display="flex" flexDirection="column" gap={1}>
-      {todos.map((t) => (
+      {[...todos].reverse().map((t) => (
         <Box
           key={t.id}
           border="1px solid #b4b4b4"

@@ -1,32 +1,19 @@
-import { createMachine, assign } from "xstate";
+import { create } from "zustand";
 
-export const todosMachine = createMachine({
-  id: "todos",
-  predictableActionArguments: true,
-  context: {
-    todos: [],
-  },
-  on: {
-    ADD: {
-      actions: assign({
-        todos: (context, event) => [...context.todos, event.todo],
-      }),
-    },
-    EDIT: {
-      actions: assign({
-        todos: (context, event) =>
-          context.todos.map((t) => {
-            if (t.id !== event.todo.id) return t;
+export const useTodos = create((set) => ({
+  todos: [],
+  addTodo: (todo) => set((state) => ({ todos: [...state.todos, todo] })),
 
-            return event.todo;
-          }),
+  editTodo: (todo) =>
+    set((state) => ({
+      todos: state.todos.map((t) => {
+        if (t.id !== todo.id) return t;
+        return todo;
       }),
-    },
-    DELETE: {
-      actions: assign({
-        todos: (context, event) =>
-          context.todos.filter((t) => t.id !== event.todo.id),
-      }),
-    },
-  },
-});
+    })),
+
+  deleteTodo: (todo) =>
+    set((state) => ({
+      todos: state.todos.filter((t) => t.id !== todo.id),
+    })),
+}));

@@ -2,27 +2,20 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { TodoList } from "./components/TodoList";
 import { v4 as uuidv4 } from "uuid";
-import { useMachine } from "@xstate/react";
-import { todosMachine } from "./store/todos";
+import { useTodos } from "./store/todos";
 
 export const App = () => {
-  const [state, send] = useMachine(todosMachine);
-
   const [newTodo, setNewTodo] = useState("");
 
-  // Todos list
-  const todos = [...state.context.todos].reverse();
+  const { addTodo } = useTodos();
 
-  // Features
   const handleAddNewTodo = () => {
     if (!newTodo) return;
-    send("ADD", { todo: { id: uuidv4(), title: newTodo } });
-    setNewTodo("");
+
+    const todo = { id: uuidv4(), title: newTodo };
+
+    addTodo(todo);
   };
-
-  const handleEditTodo = (todo) => send("EDIT", { todo });
-
-  const handleDeleteTodo = (todo) => send("DELETE", { todo });
 
   return (
     <Box
@@ -48,11 +41,7 @@ export const App = () => {
         </Button>
       </Box>
 
-      <TodoList
-        todos={todos}
-        handleEditTodo={handleEditTodo}
-        handleDeleteTodo={handleDeleteTodo}
-      />
+      <TodoList />
     </Box>
   );
 };
